@@ -1,5 +1,5 @@
 organization := "net.petitviolet"
-name := "uild4s"
+name := "ulid4s"
 version := "0.1.0"
 
 scalaVersion := "2.12.8"
