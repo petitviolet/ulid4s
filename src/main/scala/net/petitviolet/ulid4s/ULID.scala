@@ -55,8 +55,8 @@ object ULID {
 
 /**
   * ULID genrator
-  * @param timeSource a function returns current time milliseconds(e.g. [[System.currentTimeMillis()]])
-  * @param random a function returns a random value (e.g. [[Random.nextDouble()]])
+  * @param timeSource a function returns current time milliseconds(e.g. java.lang.System.currentTimeMillis())
+  * @param random a function returns a random value (e.g. scala.util.Random.nextDouble())
   */
 class ULID(timeSource: () => Long, random: () => Double) {
   import ULID.constants._
