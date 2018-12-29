@@ -11,16 +11,15 @@ object ULID {
 
   def generate: String = self.generate
 
-  def isValid(ulid:String): Boolean = self.isValid(ulid)
+  def isValid(ulid: String): Boolean = self.isValid(ulid)
 
   def timeStamp(ulid: String): Option[Long] = self.timestamp(ulid)
 
   private object constants {
     val ENCODING_CHARS: Array[Char] = Array(
-      '0', '1', '2', '3', '4', '5', '6', '7',
-      '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-      'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q',
-      'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+      'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X',
+      'Y', 'Z'
     )
 
     val DECODING_CHARS: Array[Byte] = Array[Byte](
@@ -55,39 +54,40 @@ object ULID {
 }
 
 /**
- * ULID genrator
- * @param timeSource a function returns current time milliseconds(e.g. [[System.currentTimeMillis()]])
- * @param random a function returns a random value (e.g. [[Random.nextDouble()]])
- */
+  * ULID genrator
+  * @param timeSource a function returns current time milliseconds(e.g. [[System.currentTimeMillis()]])
+  * @param random a function returns a random value (e.g. [[Random.nextDouble()]])
+  */
 class ULID(timeSource: () => Long, random: () => Double) {
   import ULID.constants._
 
   /**
-   * generate ULID string
-   * @return
-   */
+    * generate ULID string
+    * @return
+    */
   def generate: String = encodeTime() + encodeRandom()
 
   /**
-   * check a given string is valid as ULID
-   * @param ulid
-   * @return
-   */
+    * check a given string is valid as ULID
+    * @param ulid
+    * @return
+    */
   def isValid(ulid: String): Boolean = {
     if (ulid.length != ULID_LENGTH) false
     else ulid.forall { DECODING_CHARS(_) != -1 }
   }
 
   /**
-   * extract timestamp from given ULID string
-   * @param ulid ULID string
-   * @return Some(timestamp) when given string is valid ULID, otherwise None
-   */
+    * extract timestamp from given ULID string
+    * @param ulid ULID string
+    * @return Some(timestamp) when given string is valid ULID, otherwise None
+    */
   def timestamp(ulid: String): Option[Long] = {
     if (isValid(ulid)) {
-      val result = ulid.take(10).reverse.zipWithIndex.foldLeft(0L) { case (acc, (c, index)) =>
-        val idx = ENCODING_CHARS.indexOf(c)
-        acc + (idx * Math.pow(ENCODING_LENGTH, index)).toLong
+      val result = ulid.take(10).reverse.zipWithIndex.foldLeft(0L) {
+        case (acc, (c, index)) =>
+          val idx = ENCODING_CHARS.indexOf(c)
+          acc + (idx * Math.pow(ENCODING_LENGTH, index)).toLong
       }
       Option(result)
     } else None
@@ -100,13 +100,16 @@ class ULID(timeSource: () => Long, random: () => Double) {
         case TIMESTAMP_LENGTH => out
         case _ =>
           val mod = (time % ENCODING_LENGTH).toInt
-          run((time - mod) / ENCODING_LENGTH, ENCODING_CHARS(mod) + out, count + 1)
+          run((time - mod) / ENCODING_LENGTH,
+              ENCODING_CHARS(mod) + out,
+              count + 1)
       }
     }
 
     timeSource() match {
       case time if (time <= MIN_TIME) || (MAX_TIME <= time) =>
-        throw new IllegalArgumentException(s"cannot generate ULID string. Time($time) is invalid");
+        throw new IllegalArgumentException(
+          s"cannot generate ULID string. Time($time) is invalid");
       case time =>
         run(time)
     }
@@ -114,7 +117,7 @@ class ULID(timeSource: () => Long, random: () => Double) {
 
   private def encodeRandom(): String = {
     @annotation.tailrec
-    def run(out: String = "", count:Int = 0): String = {
+    def run(out: String = "", count: Int = 0): String = {
       count match {
         case RANDOM_LENGTH => out
         case _ =>
@@ -125,4 +128,3 @@ class ULID(timeSource: () => Long, random: () => Double) {
     run()
   }
 }
-
