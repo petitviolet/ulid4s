@@ -7,7 +7,7 @@ def commonSettings(_name: String) = Seq(
   ),
   name := _name,
   organization := "net.petitviolet",
-  version := "0.2.0",
+  version := VERSION,
   scalaVersion := "2.12.8",
   crossScalaVersions := Seq("2.11.11", "2.12.8"),
   scalafmtSbtCheck := true,
@@ -23,7 +23,12 @@ lazy val ulid4s = (project in file("ulid4s"))
   .settings(commonSettings("ulid4s"))
   .settings(
     publishConfiguration := publishConfiguration.value.withOverwrite(true),
-    publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
+    publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true),
+    testOptions in Test += Tests.Argument(
+      TestFrameworks.ScalaTest, "-u", {
+        val dir = System.getenv("CI_REPORTS")
+        if(dir == null) "target/reports" else dir
+      })
   )
 
 lazy val benchmark = (project in file("benchmark"))
