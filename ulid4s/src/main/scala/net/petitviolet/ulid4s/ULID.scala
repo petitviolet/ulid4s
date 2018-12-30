@@ -5,10 +5,11 @@ import java.security.SecureRandom
 object ULID {
   private val self = {
     val timeSource = () => System.currentTimeMillis()
-    val randGen = () => {
+    val randGen = {
       val random = SecureRandom.getInstance("NativePRNGNonBlocking")
-      random.setSeed(java.util.UUID.randomUUID().toString.getBytes)
-      random.nextDouble()
+      // random.setSeed(java.util.UUID.randomUUID().toString.getBytes)
+      () =>
+        random.nextDouble()
     }
     new ULID(timeSource, randGen)
   }
@@ -16,20 +17,20 @@ object ULID {
   def generate: String = self.generate
 
   /**
-    * check a given string is valid as ULID
-    * @param ulid
-    * @return
-    */
+   * check a given string is valid as ULID
+   * @param ulid
+   * @return
+   */
   def isValid(ulid: String): Boolean = {
     if (ulid.length != constants.ULID_LENGTH) false
     else ulid.forall { constants.DECODING_CHARS(_) != -1 }
   }
 
   /**
-    * extract timestamp from given ULID string
-    * @param ulid ULID string
-    * @return Some(timestamp) when given string is valid ULID, otherwise None
-    */
+   * extract timestamp from given ULID string
+   * @param ulid ULID string
+   * @return Some(timestamp) when given string is valid ULID, otherwise None
+   */
   def timestamp(ulid: String): Option[Long] = {
     if (isValid(ulid)) {
       val result = ulid.take(10).reverse.zipWithIndex.foldLeft(0L) {
@@ -43,9 +44,8 @@ object ULID {
 
   private[ulid4s] object constants {
     val ENCODING_CHARS: Array[Char] = Array(
-      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
-      'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X',
-      'Y', 'Z'
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J',
+      'K', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z'
     )
 
     val DECODING_CHARS: Array[Byte] = Array[Byte](
@@ -80,17 +80,17 @@ object ULID {
 }
 
 /**
-  * ULID genrator
-  * @param timeSource a function returns current time milliseconds(e.g. java.lang.System.currentTimeMillis())
-  * @param random a function returns a random value (e.g. scala.util.Random.nextDouble())
-  */
+ * ULID genrator
+ * @param timeSource a function returns current time milliseconds(e.g. java.lang.System.currentTimeMillis())
+ * @param random a function returns a random value (e.g. scala.util.Random.nextDouble())
+ */
 class ULID(timeSource: () => Long, random: () => Double) {
   import ULID.constants._
 
   /**
-    * generate ULID string
-    * @return
-    */
+   * generate ULID string
+   * @return
+   */
   def generate: String = encodeTime() + encodeRandom()
 
   private def encodeTime(): String = {
@@ -100,16 +100,13 @@ class ULID(timeSource: () => Long, random: () => Double) {
         case TIMESTAMP_LENGTH => out
         case _ =>
           val mod = (time % ENCODING_LENGTH).toInt
-          run((time - mod) / ENCODING_LENGTH,
-              ENCODING_CHARS(mod) + out,
-              count + 1)
+          run((time - mod) / ENCODING_LENGTH, ENCODING_CHARS(mod) + out, count + 1)
       }
     }
 
     timeSource() match {
       case time if (time < MIN_TIME) || (MAX_TIME < time) =>
-        throw new IllegalArgumentException(
-          s"cannot generate ULID string. Time($time) is invalid");
+        throw new IllegalArgumentException(s"cannot generate ULID string. Time($time) is invalid");
       case time =>
         run(time)
     }

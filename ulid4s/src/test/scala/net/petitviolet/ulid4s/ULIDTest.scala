@@ -4,12 +4,9 @@ import java.util.Calendar
 
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{ FlatSpec, Matchers }
 
-class ULIDTest
-    extends FlatSpec
-    with Matchers
-    with GeneratorDrivenPropertyChecks {
+class ULIDTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
 
   behavior of "ULIDTest"
 

@@ -8,8 +8,6 @@ resolvers ++= Seq(
 
 addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.3.4")
 
-addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.4")
-
 addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")
 
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "2.2")

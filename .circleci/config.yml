@@ -13,13 +13,13 @@ jobs:
             - ulid4s-
       - run:
           name: Run compile
-          command: sbt +clean +update +compile
+          command: sbt 'project ulid4s' +clean +update +compile
       - run:
           name: Run tests
-          command: sbt coverage test coverageReport
+          command: sbt 'project ulid4s' coverage test coverageReport
       - run:
           name: Aggregate coverage reports
-          command: sbt coverageAggregate && sbt coveralls
+          command: sbt 'project ulid4s' coverageAggregate && sbt 'project ulid4s' coveralls
       - save_cache:
           key: ulid4s-
           paths:
