@@ -1,6 +1,6 @@
 organization := "net.petitviolet"
 name := "ulid4s"
-version := "0.1.0"
+version := "0.2.0"
 
 scalaVersion := "2.12.8"
 crossScalaVersions := Seq("2.11.11", "2.12.8")
