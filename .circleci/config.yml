@@ -1,0 +1,29 @@
+version: 2
+# scoverageのレポートを保存するよう設定
+
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/ulid4s
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - ulid4s-
+      - run:
+          name: Run compile
+          command: sbt +clean +update +compile
+      - run:
+          name: Run tests
+          command: sbt coverage test coverageReport
+      - run:
+          name: Aggregate coverage reports
+          command: sbt coverageAggregate && sbt coveralls
+      - save_cache:
+          key: ulid4s-
+          paths:
+            - /.m2
+      - store_artifacts:
+          path: ~/ulid4s/target/*/scoverage-report
+
