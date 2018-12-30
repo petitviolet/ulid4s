@@ -15,9 +15,31 @@ object ULID {
 
   def generate: String = self.generate
 
-  def isValid(ulid: String): Boolean = self.isValid(ulid)
+  /**
+    * check a given string is valid as ULID
+    * @param ulid
+    * @return
+    */
+  def isValid(ulid: String): Boolean = {
+    if (ulid.length != constants.ULID_LENGTH) false
+    else ulid.forall { constants.DECODING_CHARS(_) != -1 }
+  }
 
-  def timeStamp(ulid: String): Option[Long] = self.timestamp(ulid)
+  /**
+    * extract timestamp from given ULID string
+    * @param ulid ULID string
+    * @return Some(timestamp) when given string is valid ULID, otherwise None
+    */
+  def timestamp(ulid: String): Option[Long] = {
+    if (isValid(ulid)) {
+      val result = ulid.take(10).reverse.zipWithIndex.foldLeft(0L) {
+        case (acc, (c, index)) =>
+          val idx = constants.ENCODING_CHARS.indexOf(c)
+          acc + (idx * Math.pow(constants.ENCODING_LENGTH, index)).toLong
+      }
+      Option(result)
+    } else None
+  }
 
   private object constants {
     val ENCODING_CHARS: Array[Char] = Array(
@@ -70,32 +92,6 @@ class ULID(timeSource: () => Long, random: () => Double) {
     * @return
     */
   def generate: String = encodeTime() + encodeRandom()
-
-  /**
-    * check a given string is valid as ULID
-    * @param ulid
-    * @return
-    */
-  def isValid(ulid: String): Boolean = {
-    if (ulid.length != ULID_LENGTH) false
-    else ulid.forall { DECODING_CHARS(_) != -1 }
-  }
-
-  /**
-    * extract timestamp from given ULID string
-    * @param ulid ULID string
-    * @return Some(timestamp) when given string is valid ULID, otherwise None
-    */
-  def timestamp(ulid: String): Option[Long] = {
-    if (isValid(ulid)) {
-      val result = ulid.take(10).reverse.zipWithIndex.foldLeft(0L) {
-        case (acc, (c, index)) =>
-          val idx = ENCODING_CHARS.indexOf(c)
-          acc + (idx * Math.pow(ENCODING_LENGTH, index)).toLong
-      }
-      Option(result)
-    } else None
-  }
 
   private def encodeTime(): String = {
     @annotation.tailrec
