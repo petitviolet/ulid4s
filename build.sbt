@@ -1,4 +1,4 @@
-lazy val VERSION = "0.2.0"
+lazy val VERSION = "0.3.0"
 
 def commonSettings(_name: String) = Seq(
   libraryDependencies ++= Seq(
