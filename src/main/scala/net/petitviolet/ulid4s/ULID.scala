@@ -1,11 +1,15 @@
 package net.petitviolet.ulid4s
 
-import scala.util.Random
+import java.security.SecureRandom
 
 object ULID {
   private val self = {
     val timeSource = () => System.currentTimeMillis()
-    val randGen = () => Random.nextDouble
+    val randGen = () => {
+      val random = SecureRandom.getInstance("NativePRNGNonBlocking")
+      random.setSeed(java.util.UUID.randomUUID().toString.getBytes)
+      random.nextDouble()
+    }
     new ULID(timeSource, randGen)
   }
 
