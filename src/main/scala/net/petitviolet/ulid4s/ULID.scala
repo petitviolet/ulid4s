@@ -107,7 +107,7 @@ class ULID(timeSource: () => Long, random: () => Double) {
     }
 
     timeSource() match {
-      case time if (time <= MIN_TIME) || (MAX_TIME <= time) =>
+      case time if (time < MIN_TIME) || (MAX_TIME < time) =>
         throw new IllegalArgumentException(
           s"cannot generate ULID string. Time($time) is invalid");
       case time =>
@@ -121,8 +121,13 @@ class ULID(timeSource: () => Long, random: () => Double) {
       count match {
         case RANDOM_LENGTH => out
         case _ =>
-          val rand = Math.floor(ENCODING_LENGTH * random()).toInt
-          run(ENCODING_CHARS(rand) + out, count + 1)
+          val rand = random()
+          if (rand < 0.0d || 1.0d < rand) {
+            throw new IllegalArgumentException(
+              s"random must not under 0.0 or over 1.0. random value = $rand")
+          }
+          val index = Math.floor((ENCODING_LENGTH - 1) * rand).toInt
+          run(ENCODING_CHARS(index) + out, count + 1)
       }
     }
     run()
