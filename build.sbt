@@ -1,15 +1,15 @@
-lazy val VERSION = "0.3.0"
+lazy val VERSION = "0.4.0"
 
 def commonSettings(_name: String) = Seq(
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+    "org.scalatest" %% "scalatest" % "3.0.8" % Test,
     "org.scalacheck" %% "scalacheck" % "1.14.0" % Test
   ),
   name := _name,
   organization := "net.petitviolet",
   version := VERSION,
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.11.11", "2.12.8"),
+  scalaVersion := "2.13.0",
+  crossScalaVersions := Seq("2.11.11", "2.12.8", "2.13.0"),
   scalafmtSbtCheck := true,
   scalafmtConfig := Some(file(".scalafmt.conf")),
   scalafmtOnCompile := true,

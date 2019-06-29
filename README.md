@@ -1,6 +1,6 @@
 # ulid for Scala
 
-[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/ulid4s_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/ulid4s_2.12)
+[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/ulid4s_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/ulid4s_2.13)
  [![CircleCI](https://circleci.com/gh/petitviolet/ulid4s.svg?style=svg)](https://circleci.com/gh/petitviolet/ulid4s)
  [![Coverage Status](https://coveralls.io/repos/github/petitviolet/ulid4s/badge.svg?branch=master)](https://coveralls.io/github/petitviolet/ulid4s?branch=master)
 
