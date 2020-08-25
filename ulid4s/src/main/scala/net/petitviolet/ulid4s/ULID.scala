@@ -1,12 +1,17 @@
 package net.petitviolet.ulid4s
 
-import java.security.SecureRandom
+import java.security.{ NoSuchAlgorithmException, SecureRandom }
 
 object ULID {
   private val self = {
     val timeSource = () => System.currentTimeMillis()
     val randGen = {
-      val random = SecureRandom.getInstance("NativePRNGNonBlocking")
+      val random = try {
+        SecureRandom.getInstance("NativePRNGNonBlocking")
+      } catch {
+        case _: NoSuchAlgorithmException =>
+          SecureRandom.getInstanceStrong()
+      }
       // random.setSeed(java.util.UUID.randomUUID().toString.getBytes)
       () =>
         random.nextDouble()
