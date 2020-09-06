@@ -1,5 +1,4 @@
 version: 2
-# scoverageのレポートを保存するよう設定
 
 jobs:
   build:
