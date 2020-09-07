@@ -2,8 +2,33 @@ package net.petitviolet.ulid4s
 
 import java.security.{ NoSuchAlgorithmException, SecureRandom }
 
+import scala.util.{ Failure, Success, Try }
+
+class ULID private[ulid4s] (val value: String) {
+  override val toString: String = value
+
+  /**
+   * Extract timestamp from ULID string
+   */
+  lazy val timestamp: Long =
+    ULID.timestamp(value).getOrElse {
+      throw new IllegalArgumentException(s"${value} is invalid ULID")
+    }
+}
+
 object ULID {
-  private val self = {
+
+  /**
+   * Build a ULID instance from a String
+   * @param ulid String
+   * @return Success[ULID] if given String is valid, otherwise return Failure[IllegalArgumentException]
+   */
+  def fromString(ulid: String): Try[ULID] = {
+    if (isValid(ulid)) { Success(new ULID(ulid)) } else
+      Failure(new IllegalArgumentException(s"given string is not valid ULID: ${ulid}"))
+  }
+
+  private val generator = {
     val timeSource = () => System.currentTimeMillis()
     val randGen = {
       val random = try {
@@ -16,15 +41,19 @@ object ULID {
       () =>
         random.nextDouble()
     }
-    new ULID(timeSource, randGen)
+    new ULIDGenerator(timeSource, randGen)
   }
 
-  def generate: String = self.generate
+  /**
+   * Generate ULID instance using default generator
+   * @return ULID
+   */
+  def generate: ULID = generator.generate
 
   /**
    * check a given string is valid as ULID
    * @param ulid
-   * @return
+   * @return true if given ulid string is valid, otherwise return false
    */
   def isValid(ulid: String): Boolean = {
     if (ulid.length != constants.ULID_LENGTH) false
@@ -89,14 +118,14 @@ object ULID {
  * @param timeSource a function returns current time milliseconds(e.g. java.lang.System.currentTimeMillis())
  * @param random a function returns a random value (e.g. scala.util.Random.nextDouble())
  */
-class ULID(timeSource: () => Long, random: () => Double) {
+class ULIDGenerator(timeSource: () => Long, random: () => Double) {
   import ULID.constants._
 
   /**
    * generate ULID string
    * @return
    */
-  def generate: String = encodeTime() + encodeRandom()
+  def generate: ULID = new ULID(encodeTime() + encodeRandom())
 
   private def encodeTime(): String = {
     @annotation.tailrec

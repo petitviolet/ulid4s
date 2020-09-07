@@ -6,24 +6,29 @@ import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{ FlatSpec, Matchers }
 
+import scala.util.Random
+
 class ULIDTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
 
-  behavior of "ULIDTest"
+  behavior of "ULID"
 
   private def ulid(timestamp: => Long, random: => Double) =
-    new ULID(() => timestamp, () => random)
+    new ULIDGenerator(() => timestamp, () => random)
 
-  it should "isValid" in {
-    ULID.isValid(ulid(System.currentTimeMillis(), 0.0d).generate) shouldBe true
+  "isValid" should "returns true if args are valid" in {
+    forAll(Gen.chooseNum(ULID.constants.MIN_TIME, ULID.constants.MAX_TIME)) { timestamp: Long =>
+      val random = Random.nextDouble();
+      ULID.isValid(ulid(timestamp, random).generate.value) shouldBe true
+    }
   }
 
   it should "generate" in {
-    ulid(ULID.constants.MIN_TIME, 0.0d).generate shouldBe "00000000000000000000000000"
-    ulid(1L, 0.0d).generate shouldBe "00000000010000000000000000"
-    ulid(ULID.constants.MAX_TIME, 0.0d).generate shouldBe "7ZZZZZZZZZ0000000000000000"
+    ulid(ULID.constants.MIN_TIME, 0.0d).generate.value shouldBe "00000000000000000000000000"
+    ulid(1L, 0.0d).generate.value shouldBe "00000000010000000000000000"
+    ulid(ULID.constants.MAX_TIME, 0.0d).generate.value shouldBe "7ZZZZZZZZZ0000000000000000"
 
-    ulid(0L, 0.5d).generate shouldBe "0000000000FFFFFFFFFFFFFFFF"
-    ulid(0L, 1.0d).generate shouldBe "0000000000ZZZZZZZZZZZZZZZZ"
+    ulid(0L, 0.5d).generate.value shouldBe "0000000000FFFFFFFFFFFFFFFF"
+    ulid(0L, 1.0d).generate.value shouldBe "0000000000ZZZZZZZZZZZZZZZZ"
   }
 
   it should "fail to generate" in {
@@ -43,8 +48,8 @@ class ULIDTest extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks
       whenever(
         cal.getTimeInMillis > ULID.constants.MIN_TIME
           && cal.getTimeInMillis < ULID.constants.MAX_TIME) {
-        val result = ULID.timestamp(ulid(cal.getTimeInMillis, 0.0d).generate)
-        result.get shouldBe cal.getTimeInMillis
+        val result = ulid(cal.getTimeInMillis, 0.0d).generate.timestamp
+        result shouldBe cal.getTimeInMillis
       }
     }
   }
