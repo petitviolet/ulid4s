@@ -1,5 +1,7 @@
 # ulid for Scala
 
+Strongly recommended to use [airframe-ulid](https://wvlet.org/airframe/docs/airframe-ulid) instead.
+
 [![MavenCentral](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/ulid4s_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/ulid4s_2.13)
  [![Actions Status](https://github.com/petitviolet/ulid4s/workflows/CI/badge.svg)](https://github.com/petitviolet/ulid4s/actions)
  [![codecov](https://codecov.io/gh/petitviolet/ulid4s/branch/master/graph/badge.svg)](https://codecov.io/gh/petitviolet/ulid4s)
